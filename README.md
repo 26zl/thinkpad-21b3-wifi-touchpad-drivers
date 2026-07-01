@@ -1,21 +1,12 @@
 # ThinkPad 21B3 — WiFi & Touchpad Drivers
 
-Offline WiFi and touchpad (trackpad) drivers for the **Lenovo ThinkPad, machine type `21B3`**
-(Intel 12th Gen "Alder Lake" platform, Intel Wi-Fi 6 AX201, ELAN touchpad).
+Offline WiFi and touchpad drivers for reinstalling Windows on Lenovo ThinkPad
+machine type `21B3`.
 
-## Why this exists
-
-After a clean reinstall of Windows, this laptop boots with **no WiFi and a dead
-touchpad**, because Windows does not ship the required drivers in the box. Without
-WiFi you can't download the drivers, and without a touchpad you can barely use the
-machine — a classic chicken-and-egg problem.
-
-This repo contains exactly those drivers so you can drop them on the same USB stick
-you install Windows from, and get connectivity and the touchpad back in one step.
-
-> The touchpad is an **I2C HID** device. It depends on the **Intel Serial IO I2C +
-> GPIO** controllers. If you only copy the ELAN touchpad driver but forget the I2C
-> controller, the touchpad still won't work — so both are included here.
+This repository is intended for the reinstallation process and initial setup before
+Windows Update is available. It is not intended for driver maintenance during normal
+use; once Windows is running and online, Windows Update normally installs these
+drivers automatically.
 
 ## What's included
 
@@ -25,7 +16,7 @@ you install Windows from, and get connectivity and the touchpad back in one step
 | **Touchpad** | ELAN pointing device / trackpad | `epd.inf`, `etdhsa.inf`, `hideventfilter.inf` |
 | **I2C controller** *(touchpad depends on this)* | Intel Serial IO I2C + GPIO | `ialpss2_i2c_adl.inf`, `ialpss2_gpio2_adl.inf` |
 
-All packages are the original, vendor-signed drivers (verified `Valid` signature).
+The Intel Serial IO I2C and GPIO drivers are required for the ELAN touchpad.
 
 ```
 drivers/
@@ -43,16 +34,15 @@ Get-CimInstance Win32_ComputerSystem | Select-Object Manufacturer, Model
 ```
 
 The **first four characters** of the model are the machine type. Other configurations
-that use the same **Intel AX201** WiFi card and **ELAN I2C touchpad** will very likely
-work too, but this set was captured from a `21B3` machine.
+may require different drivers.
 
 ## How to use it
 
-**Before reinstalling (while everything still works):**
+**Before reinstalling:**
 
 1. Plug in the USB stick you use to reinstall Windows.
 2. Double-click **`copy-to-usb.bat`**. It finds the Windows install USB automatically
-   and copies the drivers (plus the installer) onto it.
+   and copies the drivers and installer onto it.
 
 **Reinstall Windows** from that USB as usual.
 
@@ -61,7 +51,7 @@ work too, but this set was captured from a `21B3` machine.
 3. Plug the same USB stick back in.
 4. Open the USB and double-click **`install-drivers.bat`** (approve the Administrator
    prompt). It installs every driver automatically via `pnputil`.
-5. Restart. WiFi and the touchpad now work.
+5. Restart Windows.
 
 ### Manual install (alternative)
 
@@ -73,22 +63,10 @@ pnputil /add-driver drivers\*.inf /subdirs /install
 
 ## Troubleshooting
 
-- **Touchpad still dead after the first reboot?** Run `install-drivers.bat` once more
-  and reboot again. The I2C controller driver sometimes has to be present *before* the
-  touchpad driver binds — a second pass fixes it.
+- **Touchpad still unavailable after restarting?** Run `install-drivers.bat` again
+  and restart Windows.
 - **Install a single driver manually:** right-click the `.inf` inside its subfolder and
   choose *Install*.
-
-## How these drivers were captured
-
-They were exported from a working installation on the same model, which guarantees an
-exact hardware match:
-
-```powershell
-dism /online /export-driver /destination:C:\exported-drivers
-```
-
-You can reproduce your own set the same way before wiping any Lenovo machine.
 
 ## License / disclaimer
 

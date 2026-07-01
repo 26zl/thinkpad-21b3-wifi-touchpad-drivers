@@ -5,9 +5,5 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
-# Driver packages must NOT be altered in any way.
-# Changing even a single byte (e.g. line endings in a .inf) breaks the
-# matching .cat catalog signature, and Windows will then refuse to install
-# the driver ("the hash for the file is not present in the catalog").
-# Treat the entire drivers/ tree as opaque binary so git never touches it.
+# Preserve vendor-signed driver packages byte-for-byte.
 drivers/** binary
