@@ -49,7 +49,6 @@ echo Multiple Windows USBs found.
 choice /C DEFGHIJKLMNOPQRSTUVWXYZ /N /M "Press the drive letter to use: "
 set "CHOICE_RESULT=%errorlevel%"
 if "%CHOICE_RESULT%"=="0" goto :selection_failed
-if %CHOICE_RESULT% GTR 23 goto :selection_failed
 set /a "CHOICE_INDEX=CHOICE_RESULT-1"
 call set "TARGET=%%DRIVE_LETTERS:~%CHOICE_INDEX%,1%%"
 if not defined USB_%TARGET% goto :invalid_usb
